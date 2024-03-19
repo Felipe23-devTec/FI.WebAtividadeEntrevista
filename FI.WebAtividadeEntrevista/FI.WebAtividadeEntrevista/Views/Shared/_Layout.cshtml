@@ -41,5 +41,12 @@
     @Scripts.Render("~/bundles/jtable")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.min.js"></script>
+    <script>
+        //utilizando mascara para letras tb
+        //jQuery("#cpf").mask("A00-00");
+        jQuery("#Cpf").mask("999.999.999-99");
+
+    </script>
 </body>
 </html>
