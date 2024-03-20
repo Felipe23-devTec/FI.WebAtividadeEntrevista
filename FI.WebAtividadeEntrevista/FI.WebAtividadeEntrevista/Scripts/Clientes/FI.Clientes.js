@@ -1,4 +1,4 @@
-﻿
+﻿var listaBeneficiarios = [];
 $(document).ready(function () {
     $('#formCadastro').submit(function (e) {
         e.preventDefault();
@@ -24,6 +24,7 @@ $(document).ready(function () {
                         "Logradouro": $(this).find("#Logradouro").val(),
                         "Telefone": $(this).find("#Telefone").val(),
                         "Cpf": cpf,
+                        "Beneficiarios": listaBeneficiarios
 
                     },
                     error:
@@ -48,17 +49,79 @@ $(document).ready(function () {
         }
         
     })
+    
 
     $('#beneficiario').on("click", function (e) {
         e.preventDefault();
         ModalDialogBeneficiario("BENEFICIARIOS")
     })
+    $(document).on('click', '#adicionarBeneficiario', function () {
+        var cpf = $('#CpfBeneficiario').val();
+        var nome = $('#NomeBneficiario').val();
+        adicionarBeneficiario(cpf, nome)
+    });
+    $(document).on('click', '.btn-excluir', function () {
+        var index = $(this).data('index');
+        listaBeneficiarios.splice(index, 1);
+        atualizarTabela();
+    });
+    $(document).on('click', '.btn-alterar', function () {
+        var index = $(this).data('index');
+        var beneficiario = listaBeneficiarios[index];
+        $('#CpfBeneficiario').val(beneficiario.cpf);
+        $('#NomeBneficiario').val(beneficiario.nome);
+        listaBeneficiarios.splice(index, 1);
+        atualizarTabela();
+
+        
+    });
+
     
 })
+function atualizarTabela() {
+    var tabela = $('#tabelaBeneficiarios tbody');
+    tabela.empty();
+    listaBeneficiarios.forEach(function (beneficiario, index) {
+        var linha = '<tr><td>' + beneficiario.cpf + '</td><td>' + beneficiario.nome + '</td>' +
+                        '<td><button type="button" class="btn btn-primary btn-sm btn-alterar" style="margin-right: 5px" data-index="' + index + '">Alterar</button>' +
+                        '<button type="button" class="btn btn-danger btn-sm btn-excluir" data-index="' + index + '">Excluir</button></td>'+
+                    '</tr>';
+        tabela.append(linha);
+    });
+}
+function adicionarBeneficiario(cpf, nome) {
+    cpf = cpf.replace(/\.|-/g, "");
+    var cpfExiste = listaBeneficiarios.find(function (beneficiario) {
+        return beneficiario.cpf === cpf;
+    });
+    if (cpf && nome) {
+        if (!cpfExiste) {
+            if (validaValorRepetido(cpf)) {
+                ModalDialog("CPF Não permitido", "Valor de CPF Inválido!")
+            } else {
+                if (validaPrimeiroDigito(cpf) || validaSegundoDigito(cpf)) {
+                    ModalDialog("CPF Não permitido", "Valor de CPF Inválido!")
+                } else {
+                    listaBeneficiarios.push({ cpf: cpf, nome: nome });
+                    console.log(listaBeneficiarios);
+                    $('#CpfBeneficiario').val("")
+                    $('#NomeBneficiario').val("");
 
+                    atualizarTabela();
+                }
+            }
+
+        } else {
+            ModalDialog("CPF existente", "CPF já foi inserido!")
+        }
+    } else {
+        ModalDialog("Campo(s) Vazio(s)", "CPF ou Nome não foi preenchido!")
+    }
+    
+}
 function ModalDialogBeneficiario(titulo) {
     var random = Math.random().toString().replace('.', '');
-    var texto = '<div id="' + random + '" class="modal fade">                                                               ' +
+    var texto = '<div id="modalBeneficiario" class="modal fade">                                                               ' +
         '        <div class="modal-dialog">                                                                                 ' +
         '            <div class="modal-content">                                                                            ' +
         '                <div class="modal-header">                                                                         ' +
@@ -66,27 +129,33 @@ function ModalDialogBeneficiario(titulo) {
         '                    <h4 class="modal-title">' + titulo + '</h4>                                                    ' +
         '                </div>                                                                                             ' +
         '                <div class="modal-body">                                                                           ' +
-        '                      <div>' +
-        '                          <label for="Cpf">CPF:</label>' +
-        '                          <input required="required" type="text" class="form-control" id="Cpf" name="Cpf" placeholder="Ex.: 040.093.093-09" maxlength="20">' +
-        '                     </div> ' +
-        '                     <div>' +
-        '                          <label for="Nome">Nome:</label>' +
-        '                          <input required="required" type="text" class="form-control" id="Nome" name="Nome" placeholder="Ex.: Jose" maxlength="50">' +
-        '                     </div> ' +
-        '                     <button type="button" class="btn btn-sm btn-success" id="beneficiario" style="margin-top: 25px;">INCLUIR</button>' +
-        '                     <table class="table">' +
+        '                     <div class="row">'+
+        '                       <div class="col-md-4">' +
+        '                           <div class="form-group">'+
+        '                               <label for="CpfBeneficiario">CPF:</label>' +
+        '                               <input required="required" type="text" class="form-control" id="CpfBeneficiario" name="CpfBeneficiario" placeholder="Ex.: 040.093.093-09" maxlength="20">' +
+        '                           </div>'+
+        '                       </div> ' +
+        '                       <div class="col-md-6">' +
+        '                           <div class="form-group">' +
+        '                               <label for="NomeBneficiario">Nome:</label>' +
+        '                               <input required="required" type="text" class="form-control" id="NomeBneficiario" name="NomeBneficiario" placeholder="Ex.: Jose" maxlength="50">' +
+        '                           </div>' +
+        '                       </div> ' +
+        '                       <div class="col-md-2">' +
+        '                           <button type="button" class="btn btn-sm btn-success" id="adicionarBeneficiario" style="margin-top: 25px;">INCLUIR</button>' +
+        '                       </div>'+
+        
+        '                     </div>'+
+        '                     <table class="table" id="tabelaBeneficiarios">' +
         '                           <thead>' +
         '                                <tr>' +
         '                                <th>CPF</th>' +
         '                                <th>Nome</th>' +
+        '                                <th>Ações</th>'+
         '                                </tr>'+
         '                           </thead>' +
         '                        <tbody>' +
-        '                            <tr>' +
-        '                                <td>Dados da tabela</td> ' +
-        '                                <td>Dados da tabela</td> ' +
-        '                            </tr>' +
         '                        </tbody>' +
         '                     </table>'+
         '                </div>                                                                                             ' +
@@ -99,7 +168,8 @@ function ModalDialogBeneficiario(titulo) {
         '</div> <!-- /.modal -->                                                                                        ';
 
     $('body').append(texto);
-    $('#' + random).modal('show');
+    $('#modalBeneficiario').modal('show');
+    $('#CpfBeneficiario').mask('999.999.999-99');
 }
 function ModalDialog(titulo, texto) {
     var random = Math.random().toString().replace('.', '');

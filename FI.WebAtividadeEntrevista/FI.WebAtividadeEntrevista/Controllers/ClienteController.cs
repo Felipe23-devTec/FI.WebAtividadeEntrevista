@@ -61,6 +61,10 @@ namespace WebAtividadeEntrevista.Controllers
                         Telefone = model.Telefone,
                         Cpf = model.Cpf,
                     });
+
+                    var cpfCliente = model.Cpf;
+
+
                     result.isOk = true;
                     result.message = "Cadastro de cliente realizado com sucesso!";
                     return Json(result);
