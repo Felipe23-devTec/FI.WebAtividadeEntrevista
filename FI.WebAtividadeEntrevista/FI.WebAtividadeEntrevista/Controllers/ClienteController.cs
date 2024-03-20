@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using FI.AtividadeEntrevista.DML;
+using WebAtividadeEntrevista.Helpers;
 
 namespace WebAtividadeEntrevista.Controllers
 {
@@ -26,7 +27,7 @@ namespace WebAtividadeEntrevista.Controllers
         public JsonResult Incluir(ClienteModel model)
         {
             BoCliente bo = new BoCliente();
-            
+            var result = new RequestActionResult() { isOk = false };
             if (!this.ModelState.IsValid)
             {
                 List<string> erros = (from item in ModelState.Values
@@ -38,23 +39,33 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else
             {
-                
-                model.Id = bo.Incluir(new Cliente()
-                {                    
-                    CEP = model.CEP,
-                    Cidade = model.Cidade,
-                    Email = model.Email,
-                    Estado = model.Estado,
-                    Logradouro = model.Logradouro,
-                    Nacionalidade = model.Nacionalidade,
-                    Nome = model.Nome,
-                    Sobrenome = model.Sobrenome,
-                    Telefone = model.Telefone,
-                    Cpf = model.Cpf,
-                });
+                var verificarCpfExistente = bo.VerificarExistencia(model.Cpf);
+                if (verificarCpfExistente)
+                {
+                    result.isOk = false;
+                    result.message = "Já existe esse CPF Cadastrado!";
+                    return Json(result);
+                }
+                else
+                {
+                    model.Id = bo.Incluir(new Cliente()
+                    {
+                        CEP = model.CEP,
+                        Cidade = model.Cidade,
+                        Email = model.Email,
+                        Estado = model.Estado,
+                        Logradouro = model.Logradouro,
+                        Nacionalidade = model.Nacionalidade,
+                        Nome = model.Nome,
+                        Sobrenome = model.Sobrenome,
+                        Telefone = model.Telefone,
+                        Cpf = model.Cpf,
+                    });
+                    result.isOk = true;
+                    result.message = "Cadastro de cliente realizado com sucesso!";
+                    return Json(result);
 
-           
-                return Json("Cadastro efetuado com sucesso");
+                }
             }
         }
 
