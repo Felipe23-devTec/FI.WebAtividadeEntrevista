@@ -62,9 +62,28 @@ namespace WebAtividadeEntrevista.Controllers
                         Cpf = model.Cpf,
                     });
 
-                    var cpfCliente = model.Cpf;
+                    var idCliente = model.Id;
 
-
+                    BoBeneficiario beneficiario = new BoBeneficiario();
+                    foreach (var item in model.Beneficiarios)
+                    {
+                        var existencia = beneficiario.VerificarExistenciaBeneficiario(item.Cpf, idCliente);
+                        if (existencia)
+                        {
+                            result.isOk = false;
+                            result.message = "Já existe esse beneficiario Cadastrado com esse cliente!";
+                            return Json(result);
+                        }
+                        else
+                        {
+                            beneficiario.Incluir(new Beneficiario()
+                            {
+                                Nome = item.Nome,
+                                Cpf = item.Cpf,
+                                IdCliente = idCliente,
+                            });
+                        }
+                    }
                     result.isOk = true;
                     result.message = "Cadastro de cliente realizado com sucesso!";
                     return Json(result);
