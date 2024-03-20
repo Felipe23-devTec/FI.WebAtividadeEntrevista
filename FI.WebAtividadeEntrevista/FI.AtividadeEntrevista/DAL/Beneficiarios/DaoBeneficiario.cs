@@ -34,5 +34,35 @@ namespace FI.AtividadeEntrevista.DAL.Beneficiarios
 
             return ds.Tables[0].Rows.Count > 0;
         }
+        internal List<DML.Beneficiario> Listar(string CPF, long idCliente)
+        {
+            List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
+
+            parametros.Add(new System.Data.SqlClient.SqlParameter("CPF", CPF));
+            parametros.Add(new System.Data.SqlClient.SqlParameter("IDCLIENTE", idCliente));
+
+            DataSet ds = base.Consultar("FI_SP_BeneficiariosCliente", parametros);
+            List<DML.Beneficiario> cli = Converter(ds);
+
+            return cli;
+        }
+
+        private List<DML.Beneficiario> Converter(DataSet ds)
+        {
+            List<DML.Beneficiario> lista = new List<DML.Beneficiario>();
+            if (ds != null && ds.Tables != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                foreach (DataRow row in ds.Tables[0].Rows)
+                {
+                    DML.Beneficiario cli = new DML.Beneficiario();
+                    cli.Id = row.Field<long>("Id");
+                    cli.Nome = row.Field<string>("Nome");
+                    cli.Cpf = row.Field<string>("CPF");
+                    lista.Add(cli);
+                }
+            }
+
+            return lista;
+        }
     }
 }

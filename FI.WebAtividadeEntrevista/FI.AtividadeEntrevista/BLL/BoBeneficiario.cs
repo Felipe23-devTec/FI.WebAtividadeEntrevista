@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,11 @@ namespace FI.AtividadeEntrevista.BLL
         {
             DAL.Beneficiarios.DaoBeneficiario ben = new DAL.Beneficiarios.DaoBeneficiario();
             return ben.VerificarExistenciaBeneficiario(CPF, idCliente);
+        }
+        public List<DML.Beneficiario> Listar(string CPF, long idCliente)
+        {
+            DAL.Beneficiarios.DaoBeneficiario ben = new DAL.Beneficiarios.DaoBeneficiario();
+            return ben.Listar(CPF,idCliente);
         }
     }
 }

@@ -61,27 +61,29 @@ namespace WebAtividadeEntrevista.Controllers
                         Telefone = model.Telefone,
                         Cpf = model.Cpf,
                     });
-
-                    var idCliente = model.Id;
-
-                    BoBeneficiario beneficiario = new BoBeneficiario();
-                    foreach (var item in model.Beneficiarios)
+                    if(model.Beneficiarios != null)
                     {
-                        var existencia = beneficiario.VerificarExistenciaBeneficiario(item.Cpf, idCliente);
-                        if (existencia)
+                        var idCliente = model.Id;
+
+                        BoBeneficiario beneficiario = new BoBeneficiario();
+                        foreach (var item in model.Beneficiarios)
                         {
-                            result.isOk = false;
-                            result.message = "Já existe esse beneficiario Cadastrado com esse cliente!";
-                            return Json(result);
-                        }
-                        else
-                        {
-                            beneficiario.Incluir(new Beneficiario()
+                            var existencia = beneficiario.VerificarExistenciaBeneficiario(item.Cpf, idCliente);
+                            if (existencia)
                             {
-                                Nome = item.Nome,
-                                Cpf = item.Cpf,
-                                IdCliente = idCliente,
-                            });
+                                result.isOk = false;
+                                result.message = "Já existe esse beneficiario Cadastrado com esse cliente!";
+                                return Json(result);
+                            }
+                            else
+                            {
+                                beneficiario.Incluir(new Beneficiario()
+                                {
+                                    Nome = item.Nome,
+                                    Cpf = item.Cpf,
+                                    IdCliente = idCliente,
+                                });
+                            }
                         }
                     }
                     result.isOk = true;
@@ -132,11 +134,11 @@ namespace WebAtividadeEntrevista.Controllers
         {
             BoCliente bo = new BoCliente();
             Cliente cliente = bo.Consultar(id);
-            Models.ClienteModel model = null;
+            Models.ClienteAtualizarModel model = null;
 
             if (cliente != null)
             {
-                model = new ClienteModel()
+                model = new ClienteAtualizarModel()
                 {
                     Id = cliente.Id,
                     CEP = cliente.CEP,
@@ -148,10 +150,8 @@ namespace WebAtividadeEntrevista.Controllers
                     Nome = cliente.Nome,
                     Sobrenome = cliente.Sobrenome,
                     Telefone = cliente.Telefone,
-                    Cpf = cliente.Cpf
+                    Cpf = cliente.Cpf,
                 };
-
-            
             }
 
             return View(model);
