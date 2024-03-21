@@ -5,8 +5,10 @@
 @section scripts{
     <script>
         var urlPost = '@Url.Action("Incluir", "Cliente", new { area = "" })';
+        var urlget = '@Url.Action("BeneficiarioList", "Beneficiario", new { area = "" })';
+        var urlExcluir = '@Url.Action("Excluir", "Beneficiario", new { area = "" })';
     </script>
-    @Scripts.Render("~/bundles/clientes")
+    @Scripts.Render("~/bundles/listClientes")
 }
 <h2>@Html.Raw(ViewBag.Title)</h2>
 @Html.Partial("Forms")

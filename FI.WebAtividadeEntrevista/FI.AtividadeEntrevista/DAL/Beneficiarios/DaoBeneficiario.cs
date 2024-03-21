@@ -46,6 +46,26 @@ namespace FI.AtividadeEntrevista.DAL.Beneficiarios
 
             return cli;
         }
+        internal List<DML.Beneficiario> Consultar()
+        {
+            List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
+
+            parametros.Add(new System.Data.SqlClient.SqlParameter("ID", SqlDbType.BigInt) { Value = 0, Direction = ParameterDirection.Input });
+
+            DataSet ds = base.Consultar("FI_SP_ConsBeneficiario", parametros);
+            List<DML.Beneficiario> cli = Converter(ds);
+
+            return cli;
+        }
+        internal void Excluir(string cpf)
+        {
+            List<System.Data.SqlClient.SqlParameter> parametros = new List<System.Data.SqlClient.SqlParameter>();
+
+            parametros.Add(new System.Data.SqlClient.SqlParameter("CPF", cpf));
+
+            DataSet ds = base.Consultar("FI_SP_ExcluirBeneficiario", parametros);
+            
+        }
 
         private List<DML.Beneficiario> Converter(DataSet ds)
         {
@@ -58,6 +78,7 @@ namespace FI.AtividadeEntrevista.DAL.Beneficiarios
                     cli.Id = row.Field<long>("Id");
                     cli.Nome = row.Field<string>("Nome");
                     cli.Cpf = row.Field<string>("CPF");
+                    cli.IdCliente = row.Field<long>("IDCLIENTE");
                     lista.Add(cli);
                 }
             }

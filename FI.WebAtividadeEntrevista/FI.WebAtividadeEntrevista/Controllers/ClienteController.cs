@@ -61,29 +61,26 @@ namespace WebAtividadeEntrevista.Controllers
                         Telefone = model.Telefone,
                         Cpf = model.Cpf,
                     });
-                    if(model.Beneficiarios != null)
+                    if (model.Beneficiario != null)
                     {
                         var idCliente = model.Id;
 
                         BoBeneficiario beneficiario = new BoBeneficiario();
-                        foreach (var item in model.Beneficiarios)
+                        var existencia = beneficiario.VerificarExistenciaBeneficiario(model.Beneficiario.Cpf, idCliente);
+                        if (existencia)
                         {
-                            var existencia = beneficiario.VerificarExistenciaBeneficiario(item.Cpf, idCliente);
-                            if (existencia)
+                            result.isOk = false;
+                            result.message = "Já existe esse beneficiario Cadastrado com esse cliente!";
+                            return Json(result);
+                        }
+                        else
+                        {
+                            beneficiario.Incluir(new Beneficiario()
                             {
-                                result.isOk = false;
-                                result.message = "Já existe esse beneficiario Cadastrado com esse cliente!";
-                                return Json(result);
-                            }
-                            else
-                            {
-                                beneficiario.Incluir(new Beneficiario()
-                                {
-                                    Nome = item.Nome,
-                                    Cpf = item.Cpf,
-                                    IdCliente = idCliente,
-                                });
-                            }
+                                Nome = model.Beneficiario.Nome,
+                                Cpf = model.Beneficiario.Cpf,
+                                IdCliente = idCliente,
+                            });
                         }
                     }
                     result.isOk = true;
@@ -110,6 +107,9 @@ namespace WebAtividadeEntrevista.Controllers
             }
             else
             {
+                BoBeneficiario beneficiario = new BoBeneficiario();
+
+                beneficiario.Consultar();
                 bo.Alterar(new Cliente()
                 {
                     Id = model.Id,

@@ -1,4 +1,4 @@
-﻿var listaBeneficiarios = [];
+﻿
 function ModalDialogBeneficiario(titulo) {
     var random = Math.random().toString().replace('.', '');
     var texto = '<div id="modalBeneficiario" class="modal fade">                                                               ' +
@@ -209,17 +209,18 @@ $(document).ready(function () {
                             } else {
                                 ModalDialog("Atenção", result.message)
                             }
-                            
+
                         }
                 });
             }
         }
-        
-    })
-    $('#beneficiario').on("click", function (e) {
-        e.preventDefault();
+
+    });
+    $('#beneficiario').on("click", function () {
         ModalDialogBeneficiario("BENEFICIARIOS")
-    })
+        atualizarTabela();
+
+    });
     $(document).on('click', '#adicionarBeneficiario', function () {
         var cpf = $('#CpfBeneficiario').val();
         var nome = $('#NomeBneficiario').val();
@@ -227,6 +228,36 @@ $(document).ready(function () {
     });
     $(document).on('click', '.btn-excluir', function () {
         var index = $(this).data('index');
+        var beneficiario = listaBeneficiarios[index];
+        $.ajax({
+            url: urlExcluir,
+            method: "POST",
+            data: {
+                "NOME": beneficiario.nome,
+                "Cpf": beneficiario.cpf,
+            },
+            error:
+                function (r) {
+                    if (r.status == 400)
+                        ModalDialog("Ocorreu um erro", r.responseJSON);
+                    else if (r.status == 500)
+                        ModalDialog("Ocorreu um erro", "Ocorreu um erro interno no servidor.");
+                },
+            success:
+                function (result) {
+                    if (result.isOk) {
+                        ModalDialog("Sucesso!", result.message)
+                        $("#formCadastro")[0].reset();
+                        listaBeneficiarios = [];
+                        atualizarTabela();
+
+                    } else {
+                        ModalDialog("Atenção", result.message)
+                    }
+
+                }
+        });
+
         listaBeneficiarios.splice(index, 1);
         atualizarTabela();
     });
