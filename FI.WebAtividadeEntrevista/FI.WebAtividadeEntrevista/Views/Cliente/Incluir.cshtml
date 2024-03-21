@@ -5,8 +5,8 @@
 @section scripts{
     <script>
         var urlPost = '@Url.Action("Incluir", "Cliente", new { area = "" })';
-        var urlget = '@Url.Action("BeneficiarioList", "Beneficiario", new { area = "" })';
-        var urlExcluir = '@Url.Action("Excluir", "Beneficiario", new { area = "" })';
+        var urlget = '@Url.Action("BeneficiarioList", "Cliente", new { area = "" })';
+        var urlExcluir = '@Url.Action("Excluir", "Cliente", new { area = "" })';
     </script>
     @Scripts.Render("~/bundles/listClientes")
 }
